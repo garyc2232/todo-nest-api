@@ -8,4 +8,4 @@ import { HealthCheckModule } from './modules/healthCheck/healthCheck.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}
