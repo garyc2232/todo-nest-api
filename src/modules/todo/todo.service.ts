@@ -45,8 +45,6 @@ export class TodoService {
       status: initStatus,
     });
 
-    console.log(todoResult);
-
     return todoResult;
   }
 

@@ -14,14 +14,21 @@ export class ListSeeder implements OnModuleInit {
 
   async onModuleInit() {
     if ((await this.listRepository.count()) === 0) {
-      for (let i = 0; i < 2; ++i) {
-        await this.listService.create({
-          id: i + 1,
-          name: `List ${i + 1}`,
-          owner: {
-            id: i + 1,
-          },
+      const listName = ['Pending', 'Urgent', 'Work', 'Home'];
+      const numberOfUser = 2;
+      let listId = 1;
+
+      for (let i = 0; i < numberOfUser; ++i) {
+        const promise = listName.map((name) => {
+          this.listService.create({
+            id: listId++,
+            name,
+            owner: {
+              id: i + 1,
+            },
+          });
         });
+        await Promise.all(promise);
       }
     }
   }
