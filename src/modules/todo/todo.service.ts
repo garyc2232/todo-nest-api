@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { DeleteResult, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Todo } from './todo.entity';
-import { TodoDto, TodoResponseDto, TodoUpdateDto } from './todo.dto';
+import { TodoCreateDto, TodoResponseDto, TodoUpdateDto } from './todo.dto';
 import { TagService } from '../tag/tag.service';
 import { StatusService } from '../status/status.service';
 import { ListDto } from '../list/list.dto';
@@ -35,20 +35,26 @@ export class TodoService {
     });
   }
 
-  async create(todo: TodoDto): Promise<Todo> {
+  async create(todo: TodoCreateDto): Promise<Todo> {
     const tags = await this.tagService.find([...todo.tags.map((t) => t.id)]);
 
     todo.tags = tags;
-    return this.todoRepository.save(todo);
+    const initStatus = await this.statusService.getInitStatus();
+    const todoResult = await this.todoRepository.save({
+      ...todo,
+      status: initStatus,
+    });
+
+    return todoResult;
   }
 
-  async update(todo: TodoUpdateDto): Promise<Todo> {
+  async update(todo: Partial<TodoUpdateDto>): Promise<any> {
     const oldTodo = await this.todoRepository.findOne({
       where: { id: todo.id },
       relations: ['tags', 'status'],
     });
 
-    if (todo?.id !== oldTodo?.id) {
+    if (!oldTodo) {
       throw new HttpException(
         `todo with id ${todo.id} not found`,
         HttpStatus.NOT_FOUND,
@@ -56,15 +62,17 @@ export class TodoService {
     }
 
     if (!!todo.tags) {
-      const tags = await this.tagService.find([...todo.tags.map((t) => t.id)]);
-      todo.tags = tags;
+      const tags = await this.tagService.find([...todo.tags]);
+      oldTodo.tags = tags;
+      delete todo.tags;
     }
     if (!!todo.status) {
-      const status = await this.statusService.getOne(todo.status.id);
-      todo.status = status;
+      const status = await this.statusService.getOne(todo.status);
+      oldTodo.status = status;
+      delete todo.status;
     }
 
-    const newTodo = {
+    const newTodo: any = {
       ...oldTodo,
       ...todo,
     };

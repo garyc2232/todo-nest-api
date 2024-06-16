@@ -21,6 +21,12 @@ export class StatusService {
     });
   }
 
+  getInitStatus(): Promise<Status> {
+    return this.statusRepository.findOne({
+      where: { sequence: 0 },
+    });
+  }
+
   create(todo: StatusDto): Promise<Status> {
     return this.statusRepository.save(todo);
   }

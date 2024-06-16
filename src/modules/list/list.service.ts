@@ -34,6 +34,10 @@ export class ListService {
       relations: ['owner'],
     });
 
+    if (!list) {
+      throw new HttpException(`List not found`, HttpStatus.NOT_FOUND);
+    }
+
     if (list.owner.id !== userId) {
       throw new HttpException(`Not Access Right`, HttpStatus.FORBIDDEN);
     }
@@ -64,7 +68,11 @@ export class ListService {
     }
   }
 
-  delete(id: ListDto['id']): Promise<DeleteResult> {
-    return this.listRepository.delete({ id });
+  async delete(
+    userId: UserDto['id'],
+    listId: ListDto['id'],
+  ): Promise<DeleteResult> {
+    await this.getOne(userId, listId);
+    return this.listRepository.delete({ id: listId });
   }
 }
