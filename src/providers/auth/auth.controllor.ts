@@ -10,9 +10,9 @@ import { AuthService } from './auth.service';
 import { UserDto } from '../../modules/user/user.dto';
 import { JwtPayload, Tokens } from './jwt.type';
 import { Public } from '../decorators/public.decorator';
-import { RtGuard } from '../guards/rt.guard';
+import { RefreshTokenGuard } from '../guards/refreshToken.guard';
 import { GetCurrentUser } from '../decorators/getCurrentUser.decorator';
-import { GetCurrentUserId } from '../decorators/get-current-user-id.decorator';
+import { GetCurrentUserId } from '../decorators/getCurrentUserId.decorator';
 
 @Controller('/auth')
 export class AuthController {
@@ -26,7 +26,7 @@ export class AuthController {
   }
 
   @Public()
-  @UseGuards(RtGuard)
+  @UseGuards(RefreshTokenGuard)
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   refreshTokens(

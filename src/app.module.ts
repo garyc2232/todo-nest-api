@@ -9,7 +9,7 @@ import { StatusModule } from './modules/status/status.module';
 import { ConfigModule } from '@nestjs/config';
 import config from './config/config';
 import { AuthModule } from './providers/auth/auth.module';
-import { AtGuard } from './providers/guards/at.guard';
+import { AccessTokenGuard } from './providers/guards/accessToken.guard';
 import { APP_GUARD } from '@nestjs/core';
 
 @Module({
@@ -30,7 +30,7 @@ import { APP_GUARD } from '@nestjs/core';
   providers: [
     {
       provide: APP_GUARD,
-      useClass: AtGuard,
+      useClass: AccessTokenGuard,
     },
   ],
 })
