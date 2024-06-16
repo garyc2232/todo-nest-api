@@ -41,7 +41,7 @@ export class Todo {
 
   @ManyToOne(() => List)
   @JoinTable()
-  listId: List['id'];
+  list: List;
 
   @ManyToOne(() => Status)
   @JoinTable()

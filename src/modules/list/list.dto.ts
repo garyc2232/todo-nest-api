@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsNotEmpty, Length } from 'class-validator';
 import { UserResponseDto } from '../user/user.dto';
+import { OmitType } from '@nestjs/swagger';
 
 export class ListDto {
   id: number;
@@ -15,6 +16,10 @@ export class ListDto {
   coworkers?: Partial<UserResponseDto>[];
 
   createAt?: Date;
+}
+
+export class ListCreateDto extends OmitType(ListDto, ['id', 'owner']) {
+  userId: number;
 }
 
 export class ListsDto {

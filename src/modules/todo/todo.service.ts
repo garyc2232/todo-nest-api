@@ -18,7 +18,7 @@ export class TodoService {
 
   async getAll(listId: ListDto['id']): Promise<TodoResponseDto[]> {
     const todos = await this.todoRepository.find({
-      where: { listId },
+      where: { list: { id: listId } },
       relations: ['tags', 'status'],
     });
 
@@ -44,6 +44,8 @@ export class TodoService {
       ...todo,
       status: initStatus,
     });
+
+    console.log(todoResult);
 
     return todoResult;
   }

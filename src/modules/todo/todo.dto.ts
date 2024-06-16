@@ -3,6 +3,7 @@ import { IsDate, IsNumber, Length } from 'class-validator';
 import { OmitType } from '@nestjs/mapped-types';
 import { Tag } from '../tag/tag.entity';
 import { Status } from '../status/status.entity';
+import { List } from '../list/list.entity';
 
 export class TodoDto {
   @Length(2, 40)
@@ -23,7 +24,7 @@ export class TodoDto {
 export class TodoCreatePayloadDto extends OmitType(TodoDto, ['status']) {}
 export class TodoCreateDto extends TodoCreatePayloadDto {
   @IsNumber()
-  listId: number;
+  list: List;
 }
 
 export class TodoResponseDto extends OmitType(TodoDto, ['tags', 'status']) {

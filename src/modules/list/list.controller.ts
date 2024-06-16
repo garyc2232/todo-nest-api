@@ -10,7 +10,7 @@ import {
 import { plainToInstance } from 'class-transformer';
 import { DeleteResult } from 'typeorm';
 import { ListService } from './list.service';
-import { ListDto } from './list.dto';
+import { ListCreateDto, ListDto } from './list.dto';
 import { List } from './list.entity';
 import { GetCurrentUserId } from 'src/providers/decorators/getCurrentUserId.decorator';
 import { UserDto } from '../user/user.dto';
@@ -66,8 +66,13 @@ export class ListController {
   }
 
   @Post()
-  create(@Body() payload: ListDto): Promise<ListDto> {
-    return this.listService.create(plainToInstance(ListDto, payload));
+  create(
+    @GetCurrentUserId() userId: UserDto['id'],
+    @Body() payload: ListCreateDto,
+  ): Promise<ListDto> {
+    return this.listService.create(
+      plainToInstance(ListDto, { ...payload, owner: { id: userId } }),
+    );
   }
 
   @Post('/:id/todo')
@@ -80,7 +85,7 @@ export class ListController {
 
     return this.todoService.create({
       ...payload,
-      listId: Number(list.id),
+      list,
     });
   }
 
