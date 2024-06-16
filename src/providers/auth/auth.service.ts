@@ -15,10 +15,12 @@ export class AuthService {
   ) {}
 
   async singIn(user: UserDto): Promise<Tokens & Partial<UserDto>> {
-    const userInfo = await this.userService.getOneByIdOrName({
-      name: user.name,
-    });
-
+    const userInfo = await this.userService.getOneByIdOrName(
+      {
+        name: user.name,
+      },
+      true,
+    );
     if (!userInfo)
       throw new UnauthorizedException('Incorrect username or password.');
 
@@ -43,10 +45,12 @@ export class AuthService {
     userId: number,
     user: JwtPayload,
   ): Promise<Tokens & Partial<UserDto>> {
-    const userInfo = await this.userService.getOneByIdOrName({
-      id: userId,
-    });
-
+    const userInfo = await this.userService.getOneByIdOrName(
+      {
+        id: userId,
+      },
+      true,
+    );
     if (!userInfo) throw new UnauthorizedException('User not exists.');
 
     const tokens = await this.getTokens(userId, user.userName);
