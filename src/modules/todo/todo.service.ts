@@ -2,9 +2,10 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { DeleteResult, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Todo } from './todo.entity';
-import { TodoDto, TodoUpdateDto } from './todo.dto';
+import { TodoDto, TodoResponseDto, TodoUpdateDto } from './todo.dto';
 import { TagService } from '../tag/tag.service';
 import { StatusService } from '../status/status.service';
+import { ListDto } from '../list/list.dto';
 
 @Injectable()
 export class TodoService {
@@ -15,8 +16,17 @@ export class TodoService {
     private readonly statusService: StatusService,
   ) {}
 
-  getAll(): Promise<Todo[]> {
-    return this.todoRepository.find({ relations: ['tags', 'status'] });
+  async getAll(listId: ListDto['id']): Promise<TodoResponseDto[]> {
+    const todos = await this.todoRepository.find({
+      where: { listId },
+      relations: ['tags', 'status'],
+    });
+
+    return todos.map((todo) => ({
+      ...todo,
+      status: todo.getStatusName(),
+      tags: todo.getTagNames(),
+    }));
   }
 
   getOne(id: number): Promise<Todo> {

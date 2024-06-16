@@ -11,5 +11,6 @@ import { StatusModule } from '../status/status.module';
   imports: [TypeOrmModule.forFeature([Todo, Tag]), TagModule, StatusModule],
   controllers: [TodoController],
   providers: [TodoService],
+  exports: [TodoService],
 })
 export class TodoModule {}

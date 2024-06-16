@@ -16,18 +16,12 @@ import { TodoInterceptor } from './todo.interceptor';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('todo')
-@Controller('list/:listId/todo')
+@Controller('todo')
 export class TodoController {
   constructor(private readonly todoService: TodoService) {}
 
-  @Get()
-  @UseInterceptors(TodoInterceptor)
-  getAll(): Promise<Todo[]> {
-    return this.todoService.getAll();
-  }
-
   @Get(':id')
-  @UseInterceptors(TodoInterceptor)
+  // @UseInterceptors(TodoInterceptor)
   getOne(@Param('id') id: number): Promise<Todo> {
     return this.todoService.getOne(id);
   }

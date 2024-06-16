@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { List } from './list.entity';
 import { ListDto } from './list.dto';
 import { UserService } from '../user/user.service';
+import { UserDto } from '../user/user.dto';
 
 @Injectable()
 export class ListService {
@@ -13,8 +14,11 @@ export class ListService {
     private readonly userService: UserService,
   ) {}
 
-  async getAll(): Promise<ListDto[]> {
-    const list = await this.listRepository.find({ relations: ['owner'] });
+  async getAll(userId: UserDto['id']): Promise<ListDto[]> {
+    const list = await this.listRepository.find({
+      relations: ['owner'],
+      where: { owner: { id: userId } },
+    });
     return list.map((list) => {
       const { password: _p, salt: _s, ...owner } = list.owner;
       return {
@@ -24,13 +28,19 @@ export class ListService {
     });
   }
 
-  getOne(id: number): Promise<List> {
-    return this.listRepository.findOne({
+  async getOne(userId: UserDto['id'], id: ListDto['id']): Promise<List> {
+    const list = await this.listRepository.findOne({
       where: { id },
+      relations: ['owner'],
     });
-  }
 
-  findByOwnerId(id: number): Promise<List[]> {
+    if (list.owner.id !== userId) {
+      throw new HttpException(`Not Access Right`, HttpStatus.FORBIDDEN);
+    }
+
+    return list;
+  }
+  findByOwnerId(id: ListDto['id']): Promise<List[]> {
     return this.listRepository.find({
       where: { owner: { id } },
     });
@@ -54,7 +64,7 @@ export class ListService {
     }
   }
 
-  delete(id: number): Promise<DeleteResult> {
+  delete(id: ListDto['id']): Promise<DeleteResult> {
     return this.listRepository.delete({ id });
   }
 }
