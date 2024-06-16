@@ -12,3 +12,26 @@ services:
       - "5432:5432"
     volumes:
       - ./docker/db:/docker-entrypoint-initdb.d
+  todo-api-nestjs-service:
+    container_name: todo-api-nestjs.service
+    image: node:20
+    working_dir: /usr/app
+    volumes:
+      - ./src:/usr/app/src
+      - ./test:/usr/app/test
+      - ./.env:/usr/app/.env
+      - ./.eslintrc.yaml:/usr/app/.eslintrc.yaml
+      - ./.prettierignore:/usr/app/.prettierignore
+      - ./.prettierrc.yaml:/usr/app/.prettierrc.yaml
+      - ./nest-cli.json:/usr/app/nest-cli.json
+      - ./package.json:/usr/app/package.json
+      - ./tsconfig.build.json:/usr/app/tsconfig.build.json
+      - ./tsconfig.json:/usr/app/tsconfig.json
+      - ./yarn.lock:/usr/app/yarn.lock
+    entrypoint: ["/bin/sh", "-c", "yarn && yarn start:dev"]
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_HOST=todo-api-db
+    depends_on:
+      - todo-api-db
