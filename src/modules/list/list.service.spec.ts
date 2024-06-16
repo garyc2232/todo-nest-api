@@ -13,6 +13,7 @@ import { User } from '../user/user.entity';
 describe('ListService', () => {
   let service: ListService;
   let userService: UserService;
+  const mockUserId = 1;
 
   let mockListData: ListDto[];
   let repositoryMock: MockRepository<List>;
@@ -60,7 +61,7 @@ describe('ListService', () => {
     it('should return all list', async () => {
       repositoryMock.find.mockReturnValue(mockListData);
 
-      const result = await service.getAll();
+      const result = await service.getAll(mockUserId);
 
       expect(result).toBeInstanceOf(Array);
     });
@@ -70,10 +71,30 @@ describe('ListService', () => {
     it('should return a list', async () => {
       repositoryMock.findOne.mockReturnValue(mockListData[0]);
 
-      const result = await service.getOne(mockListData[0].id);
+      const result = await service.getOne(mockUserId, mockListData[0].id);
 
       expect(result).toBeDefined();
       expect(result.id).toEqual(mockListData[0].id);
+    });
+
+    it('should throw an error if list not found', async () => {
+      repositoryMock.findOne.mockReturnValue(mockListData[0]);
+      repositoryMock.findOne = jest.fn().mockResolvedValue(null);
+
+      await expect(async () => {
+        await service.getOne(mockUserId, mockListData[0].id);
+      }).rejects.toThrow('List not found');
+    });
+
+    it('should throw an error if list ownerId not match', async () => {
+      repositoryMock.findOne.mockReturnValue(mockListData[0]);
+      repositoryMock.findOne = jest
+        .fn()
+        .mockResolvedValue({ owner: { id: 2 } });
+
+      await expect(async () => {
+        await service.getOne(mockUserId, mockListData[0].id);
+      }).rejects.toThrow('No Access Right');
     });
   });
 
@@ -106,11 +127,34 @@ describe('ListService', () => {
   describe('delete', () => {
     it('should delete a list', async () => {
       repositoryMock.delete.mockReturnValue({ affected: 1 });
+      repositoryMock.findOne = jest
+        .fn()
+        .mockResolvedValue({ owner: { id: 1 } });
 
-      const result = await service.delete(mockListData[0].id);
+      const result = await service.delete(mockUserId, mockListData[0].id);
 
       expect(result).toBeDefined();
       expect(result.affected).toEqual(1);
+    });
+
+    it('should throw an error if list not found', async () => {
+      repositoryMock.delete.mockReturnValue({ affected: 1 });
+      repositoryMock.findOne = jest.fn().mockResolvedValue(null);
+
+      await expect(async () => {
+        await service.delete(mockUserId, mockListData[0].id);
+      }).rejects.toThrow('List not found');
+    });
+
+    it('should throw an error if ownerId not match', async () => {
+      repositoryMock.delete.mockReturnValue({ affected: 1 });
+      repositoryMock.findOne = jest
+        .fn()
+        .mockResolvedValue({ owner: { id: 2 } });
+
+      await expect(async () => {
+        await service.delete(mockUserId, mockListData[0].id);
+      }).rejects.toThrow('No Access Right');
     });
   });
 });

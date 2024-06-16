@@ -39,7 +39,7 @@ export class ListService {
     }
 
     if (list.owner.id !== userId) {
-      throw new HttpException(`Not Access Right`, HttpStatus.FORBIDDEN);
+      throw new HttpException(`No Access Right`, HttpStatus.FORBIDDEN);
     }
 
     return list;

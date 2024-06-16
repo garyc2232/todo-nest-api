@@ -41,6 +41,7 @@ describe('TodoService', () => {
     service = module.get<TodoService>(TodoService);
     tagService = module.get<TagService>(TagService);
     repositoryMock = module.get(getRepositoryToken(Todo));
+
     mockTodoData = [
       {
         id: 1,
@@ -50,6 +51,9 @@ describe('TodoService', () => {
           { id: 1, name: 'Tag 1' },
           { id: 2, name: 'Tag 2' },
         ],
+        status: { id: 1, name: 'Not Start' },
+        getStatusName: jest.fn().mockReturnValue('Not Start'),
+        getTagNames: jest.fn().mockReturnValue(['Tag 1', 'Tag 2']),
       },
       {
         id: 2,
@@ -57,8 +61,11 @@ describe('TodoService', () => {
         description: 'description',
         tags: [
           { id: 1, name: 'Tag 1' },
-          { id: 2, name: 'Tag 2' },
+          { id: 3, name: 'Tag 3' },
         ],
+        status: { id: 2, name: 'Completed' },
+        getStatusName: jest.fn().mockReturnValue('Completed'),
+        getTagNames: jest.fn().mockReturnValue(['Tag 1', 'Tag 3']),
       },
     ];
   });
@@ -70,10 +77,12 @@ describe('TodoService', () => {
   describe('getAll', () => {
     it('should return all Todos', async () => {
       repositoryMock.find.mockReturnValue(mockTodoData);
-
-      const result = await service.getAll();
+      const mockListId = 1;
+      const result = await service.getAll(mockListId);
 
       expect(result).toBeInstanceOf(Array);
+      expect(result[0].status).toBe('Not Start');
+      expect(result[0].tags).toEqual(['Tag 1', 'Tag 2']);
     });
   });
 
@@ -89,7 +98,7 @@ describe('TodoService', () => {
     });
   });
 
-  describe('getOneByName', () => {
+  describe('getOne', () => {
     it('should return a Todo', async () => {
       repositoryMock.findOne.mockReturnValue(mockTodoData[0]);
 
@@ -112,6 +121,37 @@ describe('TodoService', () => {
       const result = await service.create(todo);
       expect(result).toBeDefined();
       expect(result.name).toEqual(todo.name);
+    });
+  });
+
+  describe('update', () => {
+    it('should update a Todo', async () => {
+      repositoryMock.findOne.mockReturnValue(mockTodoData[0]);
+      jest
+        .spyOn(tagService, 'find')
+        .mockResolvedValue([{ id: 2, name: 'Tag 2' }]);
+
+      const result = await service.update({
+        id: 1,
+        name: 'updated',
+        description: 'Update description',
+        tags: [2],
+      });
+
+      expect(result).toBeDefined();
+      expect(result.name).toEqual('updated');
+      expect(result.description).toEqual('Update description');
+      expect(result.tags).toEqual([{ id: 2, name: 'Tag 2' }]);
+    });
+
+    it('should throw error if todo not found', async () => {
+      const todo = mockTodoData[0];
+
+      repositoryMock.findOne.mockReturnValue(null);
+
+      await expect(async () => {
+        await service.update(todo);
+      }).rejects.toThrow(`todo with id ${todo.id} not found`);
     });
   });
 
