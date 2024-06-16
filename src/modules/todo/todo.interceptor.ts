@@ -27,7 +27,7 @@ export class TodoInterceptor implements NestInterceptor {
 
   private trim(todo: Todo): TodoResponseDto {
     const { tags, status, ...rest } = todo;
-    console.log(tags, status, rest);
+
     return {
       ...rest,
       tags: tags.map((t) => t.name),

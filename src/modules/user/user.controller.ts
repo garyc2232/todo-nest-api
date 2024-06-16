@@ -7,12 +7,10 @@ import {
   HttpStatus,
   Param,
   Post,
-  UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './user.entity';
 import { UserDto } from './user.dto';
-import { UserInterceptor } from './user.interceptor';
 import { ListService } from '../list/list.service';
 import { List } from '../list/list.entity';
 import { DeleteResult } from 'typeorm';
@@ -28,13 +26,11 @@ export class UserController {
   ) {}
 
   @Get()
-  @UseInterceptors(UserInterceptor)
   getAll(): Promise<User[]> {
     return this.userService.getAll();
   }
 
   @Get(':id')
-  @UseInterceptors(UserInterceptor)
   getOne(@Param('id') id: number): Promise<User> {
     return this.userService.getOneByIdOrName({ id: id });
   }

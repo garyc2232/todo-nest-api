@@ -12,22 +12,27 @@ export class UserService {
   ) {}
 
   getAll(): Promise<User[]> {
-    return this.userRepository.find();
+    return this.userRepository.find({ select: ['id', 'name', 'createAt'] });
   }
 
   find(ids: number[]): Promise<User[]> {
     return this.userRepository.find({ where: { id: In([...ids]) } });
   }
 
-  getOneByIdOrName(user: Partial<UserDto>): Promise<User> {
+  getOneByIdOrName(
+    user: Partial<UserDto>,
+    returnWithPassword = false,
+  ): Promise<User> {
     if (!!user.id) {
       return this.userRepository.findOne({
         where: { id: user.id },
+        select: !returnWithPassword && ['id', 'name', 'createAt'],
       });
     }
     if (!!user.name) {
       return this.userRepository.findOne({
         where: { name: user.name },
+        select: !returnWithPassword && ['id', 'name', 'createAt'],
       });
     }
     return null;
