@@ -9,7 +9,7 @@ import { TodoSeeder } from './todo.seeder';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Todo, Tag]), TagModule, StatusModule],
-  providers: [TodoService, TodoSeeder],
+  providers: [TodoService],
   exports: [TodoService],
 })
 export class TodoModule {}

@@ -1,5 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Public } from 'src/providers/decorators/public.decorator';
 
 @Controller('/health')
 @ApiTags('health')
@@ -8,6 +9,7 @@ export class HealthCheckController {
 
   @Get()
   @Get('/ready')
+  @Public()
   @ApiOperation({ summary: 'Health Check' })
   @ApiResponse({ status: 200, description: 'successful' })
   async getHealthReady(): Promise<object> {
@@ -15,6 +17,7 @@ export class HealthCheckController {
   }
 
   @Get('/ping')
+  @Public()
   @ApiOperation({ summary: 'Health Check for kubernetes' })
   @ApiResponse({ status: 200, description: 'successful' })
   async getHealthPing(): Promise<object> {

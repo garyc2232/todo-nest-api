@@ -25,7 +25,10 @@ export class TodoSeeder implements OnModuleInit {
             id: 1,
             name: 'Work',
           },
-          tags: [],
+          tags: [{
+            id: 1,
+            name: 'Tag 1',
+          }],
         } as TodoCreateDto);
       }
     }

@@ -5,6 +5,7 @@ import { TagDto } from './tag.dto';
 import { TagService } from './tag.service';
 import { Tag } from './tag.entity';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Public } from 'src/providers/decorators/public.decorator';
 
 @Controller('/tag')
 @ApiTags('tag')
@@ -12,6 +13,7 @@ export class TagController {
   constructor(private readonly tagService: TagService) {}
 
   @Get()
+  @Public()
   @ApiOperation({ summary: 'Get all tags' })
   @ApiResponse({ status: 200, description: 'successful', type: Tag })
   getAll(): Promise<Tag[]> {
