@@ -78,7 +78,6 @@ describe('AuthService', () => {
 
     it('should throw an error if password not match', async () => {
       const userInfo = { name: 'test', password: 'wrongPassword' };
-      const tokens = { accessToken: 'at', refreshToken: 'rt' };
 
       (bcrypt.compareSync as jest.Mock) = jest.fn().mockReturnValue(false);
 

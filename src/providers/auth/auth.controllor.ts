@@ -13,13 +13,18 @@ import { Public } from '../decorators/public.decorator';
 import { RefreshTokenGuard } from '../guards/refreshToken.guard';
 import { GetCurrentUser } from '../decorators/getCurrentUser.decorator';
 import { GetCurrentUserId } from '../decorators/getCurrentUserId.decorator';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @Controller('/auth')
+@ApiTags('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('/signIn')
   @Public()
+  @ApiOperation({ summary: 'Login' })
+  @ApiResponse({ status: 200, description: 'successful' })
+  @ApiBody({ type: UserDto, description: 'User name and password' })
   @HttpCode(HttpStatus.OK)
   async singIn(
     @Body() payload: Partial<UserDto>,

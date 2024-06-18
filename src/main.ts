@@ -18,10 +18,19 @@ async function bootstrap() {
   );
 
   const config = new DocumentBuilder()
-    .setTitle('Todo example')
+    .setTitle('Todo')
     .setDescription('The todo API description')
     .setVersion('1.0')
     .addTag('Todo')
+    .addBearerAuth({
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+      in: 'header',
+      name: 'Authorization',
+      description: 'Enter your Bearer token',
+    })
+    .addSecurityRequirements('bearer')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

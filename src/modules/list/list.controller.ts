@@ -21,6 +21,7 @@ import {
   TodoUpdateDto,
 } from '../todo/todo.dto';
 import { Todo } from '../todo/todo.entity';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('/list')
 export class ListController {
@@ -29,6 +30,7 @@ export class ListController {
     private readonly todoService: TodoService,
   ) {}
 
+  @ApiTags('list')
   @Get()
   getAllListByUserId(
     @GetCurrentUserId() userId: UserDto['id'],
@@ -36,6 +38,7 @@ export class ListController {
     return this.listService.getAll(userId);
   }
 
+  @ApiTags('todo')
   @Get('/:listId/todo')
   async getTodosByListId(
     @GetCurrentUserId() userId: UserDto['id'],
@@ -46,6 +49,7 @@ export class ListController {
     return this.todoService.getAll(list.id);
   }
 
+  @ApiTags('list')
   @Get(':listId')
   getOneListByUserId(
     @GetCurrentUserId() userId: UserDto['id'],
@@ -54,6 +58,7 @@ export class ListController {
     return this.listService.getOne(userId, listId);
   }
 
+  @ApiTags('todo')
   @Get('/:listId/todo/:todoId')
   async getOneTodoById(
     @GetCurrentUserId() userId: UserDto['id'],
@@ -65,6 +70,7 @@ export class ListController {
     return this.todoService.getOne(todoId);
   }
 
+  @ApiTags('list')
   @Post()
   create(
     @GetCurrentUserId() userId: UserDto['id'],
@@ -75,6 +81,7 @@ export class ListController {
     );
   }
 
+  @ApiTags('todo')
   @Post('/:id/todo')
   async createTodo(
     @GetCurrentUserId() userId: UserDto['id'],
@@ -89,6 +96,7 @@ export class ListController {
     });
   }
 
+  @ApiTags('todo')
   @Patch(':listId/todo/:todoId')
   async patchTodo(
     @GetCurrentUserId() userId: UserDto['id'],
@@ -102,6 +110,7 @@ export class ListController {
     return this.todoService.update({ id: Number(todoId), ...payload });
   }
 
+  @ApiTags('list')
   @Delete(':listId')
   deleteList(
     @GetCurrentUserId() userId: UserDto['id'],
@@ -110,6 +119,7 @@ export class ListController {
     return this.listService.delete(userId, listId);
   }
 
+  @ApiTags('todo')
   @Delete(':listId/todo/:todoId')
   async deleteTodo(
     @GetCurrentUserId() userId: UserDto['id'],
