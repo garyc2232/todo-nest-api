@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import 'dotenv/config';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -12,6 +13,7 @@ import 'dotenv/config';
       password: process.env.DB_PASSWORD || 'password',
       autoLoadEntities: true,
       synchronize: true, // Set to false in production
+      namingStrategy: new SnakeNamingStrategy()
     }),
   ],
 })
