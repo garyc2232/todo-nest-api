@@ -29,10 +29,23 @@ export class TodoService {
     }));
   }
 
-  getOne(id: number): Promise<Todo> {
-    return this.todoRepository.findOne({
+  async getOne(id: number): Promise<TodoResponseDto> {
+    const todo = await this.todoRepository.findOne({
       where: { id },
+      relations: ['tags', 'status'],
     });
+    if (!todo) {
+      throw new HttpException(
+        `todo with id ${id} not found`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return {
+      ...todo,
+      status: todo.getStatusName(),
+      tags: todo.getTagNames(),
+    };
   }
 
   async create(todo: TodoCreateDto): Promise<Todo> {

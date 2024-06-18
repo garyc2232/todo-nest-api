@@ -14,7 +14,7 @@ export class AuthService {
     private configService: ConfigService,
   ) {}
 
-  async singIn(user: UserDto): Promise<Tokens & Partial<UserDto>> {
+  async signIn(user: Partial<UserDto>): Promise<Tokens & Partial<UserDto>> {
     const userInfo = await this.userService.getOneByIdOrName(
       {
         name: user.name,

@@ -4,6 +4,7 @@ import { StatusDto } from './status.dto';
 import { StatusService } from './status.service';
 import { Status } from './status.entity';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Public } from '../../providers/decorators/public.decorator';
 
 @Controller('/status')
 @ApiTags('status')
@@ -11,6 +12,7 @@ export class StatusController {
   constructor(private readonly statusService: StatusService) {}
 
   @Get()
+  @Public()
   @ApiOperation({ summary: 'Get all status' })
   @ApiResponse({ status: 200, description: 'successful', type: Status })
   getAll(): Promise<Status[]> {

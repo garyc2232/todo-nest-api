@@ -12,18 +12,9 @@ export class StatusSeeder implements OnModuleInit {
 
   async onModuleInit() {
     if ((await this.statusRepository.count()) === 0) {
-      const promise = [];
-      promise.push(
-        this.statusRepository.save({ name: `Not Started`, sequence: 0 }),
-      );
-      promise.push(
-        this.statusRepository.save({ name: `In Progress`, sequence: 1 }),
-      );
-      promise.push(
-        this.statusRepository.save({ name: `Completed`, sequence: 2 }),
-      );
-
-      await Promise.all(promise);
+      await this.statusRepository.save({ name: `Not Started`, sequence: 0 });
+      await this.statusRepository.save({ name: `In Progress`, sequence: 1 });
+      await this.statusRepository.save({ name: `Completed`, sequence: 2 });
     }
   }
 }

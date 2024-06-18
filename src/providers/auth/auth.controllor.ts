@@ -21,8 +21,10 @@ export class AuthController {
   @Post('/signIn')
   @Public()
   @HttpCode(HttpStatus.OK)
-  async singIn(@Body() payload: UserDto): Promise<Tokens & Partial<UserDto>> {
-    return await this.authService.singIn(payload);
+  async singIn(
+    @Body() payload: Partial<UserDto>,
+  ): Promise<Tokens & Partial<UserDto>> {
+    return await this.authService.signIn(payload);
   }
 
   @Public()

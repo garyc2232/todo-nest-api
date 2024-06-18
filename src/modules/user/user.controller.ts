@@ -15,7 +15,7 @@ import { ListService } from '../list/list.service';
 import { List } from '../list/list.entity';
 import { DeleteResult } from 'typeorm';
 import { ApiTags } from '@nestjs/swagger';
-import { Public } from 'src/providers/decorators/public.decorator';
+import { Public } from '../../providers/decorators/public.decorator';
 
 @ApiTags('user')
 @Controller('/user')

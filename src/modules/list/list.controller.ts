@@ -12,7 +12,7 @@ import { DeleteResult } from 'typeorm';
 import { ListService } from './list.service';
 import { ListCreateDto, ListDto } from './list.dto';
 import { List } from './list.entity';
-import { GetCurrentUserId } from 'src/providers/decorators/getCurrentUserId.decorator';
+import { GetCurrentUserId } from '../../providers/decorators/getCurrentUserId.decorator';
 import { UserDto } from '../user/user.dto';
 import { TodoService } from '../todo/todo.service';
 import {
@@ -59,7 +59,7 @@ export class ListController {
     @GetCurrentUserId() userId: UserDto['id'],
     @Param('listId') listId: List['id'],
     @Param('todoId') todoId: Todo['id'],
-  ): Promise<Todo> {
+  ): Promise<TodoResponseDto> {
     await this.listService.getOne(userId, listId);
 
     return this.todoService.getOne(todoId);

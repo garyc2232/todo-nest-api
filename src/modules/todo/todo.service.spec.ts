@@ -94,7 +94,16 @@ describe('TodoService', () => {
       const result = await service.getOne(id);
 
       expect(result).toBeDefined();
-      expect(result.id).toEqual(id);
+      expect(result.name).toEqual(mockTodoData[0].name);
+    });
+
+    it('should throw an error if Todo not found', async () => {
+      const id = mockTodoData[0].id;
+      repositoryMock.findOne.mockReturnValue(null);
+
+      await expect(async () => {
+        await service.getOne(id);
+      }).rejects.toThrow(`todo with id ${id} not found`);
     });
   });
 

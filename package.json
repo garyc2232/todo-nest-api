@@ -87,6 +87,12 @@
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],
+    "coveragePathIgnorePatterns": [
+      ".*\\.(dto|seeder|controller|module|guard|decorator|entity|strategy)\\.ts$",
+      "/src/main.ts",
+      "/src/config/config.ts",
+      "/src/utils/repositoryMockFactory.ts"
+    ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
   }

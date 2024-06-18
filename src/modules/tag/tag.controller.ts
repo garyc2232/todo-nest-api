@@ -5,7 +5,7 @@ import { TagDto } from './tag.dto';
 import { TagService } from './tag.service';
 import { Tag } from './tag.entity';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Public } from 'src/providers/decorators/public.decorator';
+import { Public } from '../../providers/decorators/public.decorator';
 
 @Controller('/tag')
 @ApiTags('tag')
