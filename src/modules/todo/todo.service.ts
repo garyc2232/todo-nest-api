@@ -2,7 +2,13 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { DeleteResult, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Todo } from './todo.entity';
-import { TodoCreateDto, TodoFilterOptionsDto, TodoResponseDto, TodoSortingOptionsDto, TodoUpdateDto } from './todo.dto';
+import {
+  TodoCreateDto,
+  TodoFilterOptionsDto,
+  TodoResponseDto,
+  TodoSortingOptionsDto,
+  TodoUpdateDto,
+} from './todo.dto';
 import { TagService } from '../tag/tag.service';
 import { StatusService } from '../status/status.service';
 import { ListDto } from '../list/list.dto';
@@ -14,32 +20,41 @@ export class TodoService {
     private readonly todoRepository: Repository<Todo>,
     private readonly tagService: TagService,
     private readonly statusService: StatusService,
-  ) { }
+  ) {}
 
-  async getAll(listId: ListDto['id'],
+  async getAll(
+    listId: ListDto['id'],
     sortingOption: TodoSortingOptionsDto,
-    filterOptions: TodoFilterOptionsDto): Promise<TodoResponseDto[]> {
-    let { status } = filterOptions;
-    let { sortBy = 'id', sortOrder = 'DESC' } = sortingOption;
-    console.log(filterOptions)
+    filterOptions: TodoFilterOptionsDto,
+  ): Promise<TodoResponseDto[]> {
+    const { status, tags } = filterOptions;
+    const { sortBy = 'id', sortOrder = 'DESC' } = sortingOption;
 
     const queryBuilder = this.todoRepository.createQueryBuilder('todo');
     queryBuilder.leftJoinAndSelect('todo.status', 'status');
+    queryBuilder.leftJoinAndSelect('todo.tags', 'tags');
     queryBuilder.where('todo.list = :listId', { listId });
 
     if (status) {
       queryBuilder.andWhere('status.name = :status', { status });
     }
 
-    // if (tags) {
-    //   queryBuilder.innerJoin('todo.tags', 'tag');
-    //   queryBuilder.andWhere('tag.name IN (:...tags)', { tags });
-    // }
+    if (tags) {
+      const tagNames = tags.split(',').map((tag) => tag.trim());
+      queryBuilder.innerJoin('todo.tags', 'tag');
+      queryBuilder.andWhere('tag.name IN (:...tagNames)', { tagNames });
+    }
 
     if (sortBy === 'status') {
-      queryBuilder.orderBy('status.name', sortOrder.toUpperCase() as 'ASC' | 'DESC');
+      queryBuilder.orderBy(
+        'status.name',
+        sortOrder.toUpperCase() as 'ASC' | 'DESC',
+      );
     } else {
-      queryBuilder.orderBy(`todo.${sortBy}`, sortOrder.toUpperCase() as 'ASC' | 'DESC');
+      queryBuilder.orderBy(
+        `todo.${sortBy}`,
+        sortOrder.toUpperCase() as 'ASC' | 'DESC',
+      );
     }
 
     const todos = await queryBuilder.getMany();
@@ -111,8 +126,6 @@ export class TodoService {
       ...oldTodo,
       ...todo,
     };
-
-    console.log('newTodo', newTodo)
 
     return this.todoRepository.save(newTodo);
   }

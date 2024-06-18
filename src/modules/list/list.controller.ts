@@ -7,7 +7,6 @@ import {
   Patch,
   Post,
   Query,
-  ValidationPipe,
 } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { DeleteResult } from 'typeorm';
@@ -25,7 +24,7 @@ import {
   TodoUpdateDto,
 } from '../todo/todo.dto';
 import { Todo } from '../todo/todo.entity';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiParam, ApiTags } from '@nestjs/swagger';
 
 @Controller('/list')
 export class ListController {
@@ -43,12 +42,13 @@ export class ListController {
   }
 
   @ApiTags('todo')
+  @ApiParam({ name: 'listId' })
   @Get('/:listId/todo')
   async getTodosByListId(
     @GetCurrentUserId() userId: UserDto['id'],
     @Param('listId') listId: List['id'],
     @Query() sortingOption: TodoSortingOptionsDto,
-    @Query() filterOptions: TodoFilterOptionsDto
+    @Query() filterOptions: TodoFilterOptionsDto,
   ): Promise<TodoResponseDto[]> {
     const list = await this.listService.getOne(userId, listId);
 
@@ -56,6 +56,7 @@ export class ListController {
   }
 
   @ApiTags('list')
+  @ApiParam({ name: 'listId' })
   @Get(':listId')
   getOneListByUserId(
     @GetCurrentUserId() userId: UserDto['id'],
@@ -65,6 +66,8 @@ export class ListController {
   }
 
   @ApiTags('todo')
+  @ApiParam({ name: 'listId' })
+  @ApiParam({ name: 'todoId' })
   @Get('/:listId/todo/:todoId')
   async getOneTodoById(
     @GetCurrentUserId() userId: UserDto['id'],
@@ -88,10 +91,10 @@ export class ListController {
   }
 
   @ApiTags('todo')
-  @Post('/:id/todo')
+  @Post('/:listId/todo')
   async createTodo(
     @GetCurrentUserId() userId: UserDto['id'],
-    @Param('id') listId: List['id'],
+    @Param('listId') listId: List['id'],
     @Body() payload: TodoCreatePayloadDto,
   ): Promise<Todo> {
     const list = await this.listService.getOne(userId, listId);
@@ -103,6 +106,8 @@ export class ListController {
   }
 
   @ApiTags('todo')
+  @ApiParam({ name: 'listId' })
+  @ApiParam({ name: 'todoId' })
   @Patch(':listId/todo/:todoId')
   async patchTodo(
     @GetCurrentUserId() userId: UserDto['id'],
@@ -117,6 +122,7 @@ export class ListController {
   }
 
   @ApiTags('list')
+  @ApiParam({ name: 'listId' })
   @Delete(':listId')
   deleteList(
     @GetCurrentUserId() userId: UserDto['id'],
@@ -126,6 +132,8 @@ export class ListController {
   }
 
   @ApiTags('todo')
+  @ApiParam({ name: 'listId' })
+  @ApiParam({ name: 'todoId' })
   @Delete(':listId/todo/:todoId')
   async deleteTodo(
     @GetCurrentUserId() userId: UserDto['id'],
