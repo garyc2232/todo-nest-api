@@ -39,7 +39,7 @@ export class Todo {
   @JoinTable()
   tags: Tag[];
 
-  @ManyToOne(() => List)
+  @ManyToOne(() => List, { onDelete: 'CASCADE' })
   @JoinTable()
   list: List;
 
