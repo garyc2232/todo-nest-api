@@ -10,6 +10,7 @@ import { TagService } from '../tag/tag.service';
 import { Tag } from '../tag/tag.entity';
 import { StatusService } from '../status/status.service';
 import { Status } from '../status/status.entity';
+import { TodoFilterOptionsDto, TodoSortingOptionsDto } from './todo.dto';
 
 describe('TodoService', () => {
   let service: TodoService;
@@ -17,6 +18,7 @@ describe('TodoService', () => {
 
   let repositoryMock: MockRepository<Todo>;
   let mockTodoData;
+  let mockQueryBuilder;
   beforeEach(async () => {
     const module = await Test.createTestingModule({
       providers: [
@@ -41,7 +43,6 @@ describe('TodoService', () => {
     service = module.get<TodoService>(TodoService);
     tagService = module.get<TagService>(TagService);
     repositoryMock = module.get(getRepositoryToken(Todo));
-
     mockTodoData = [
       {
         id: 1,
@@ -68,6 +69,18 @@ describe('TodoService', () => {
         getTagNames: jest.fn().mockReturnValue(['Tag 1', 'Tag 3']),
       },
     ];
+
+    mockQueryBuilder = {
+      leftJoinAndSelect: jest.fn().mockReturnThis(),
+      where: jest.fn().mockReturnThis(),
+      andWhere: jest.fn().mockReturnThis(),
+      innerJoin: jest.fn().mockReturnThis(),
+      orderBy: jest.fn().mockReturnThis(),
+      getMany: jest.fn().mockResolvedValue(mockTodoData),
+    };
+    repositoryMock.createQueryBuilder = jest
+      .fn()
+      .mockReturnValue(mockQueryBuilder);
   });
 
   it('should be defined', () => {
@@ -76,13 +89,76 @@ describe('TodoService', () => {
 
   describe('getAll', () => {
     it('should return all Todos', async () => {
-      repositoryMock.find.mockReturnValue(mockTodoData);
+      const sortingOption: TodoSortingOptionsDto = {};
+      const filterOptions: TodoFilterOptionsDto = {};
+
       const mockListId = 1;
-      const result = await service.getAll(mockListId);
+      const result = await service.getAll(
+        mockListId,
+        sortingOption,
+        filterOptions,
+      );
 
       expect(result).toBeInstanceOf(Array);
       expect(result[0].status).toBe('Not Start');
       expect(result[0].tags).toEqual(['Tag 1', 'Tag 2']);
+    });
+
+    it('should return all Todos with Filtering', async () => {
+      const listId = 1;
+      const sortingOption: TodoSortingOptionsDto = {};
+      const filterOptions: TodoFilterOptionsDto = {
+        status: 'In Progress',
+        tags: 'Tag 1, Tag 2',
+      };
+
+      await service.getAll(listId, sortingOption, filterOptions);
+
+      expect(mockQueryBuilder.where).toHaveBeenCalledWith(
+        'todo.list = :listId',
+        { listId },
+      );
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        'status.name = :status',
+        { status: 'In Progress' },
+      );
+      expect(mockQueryBuilder.innerJoin).toHaveBeenCalledWith(
+        'todo.tags',
+        'tag',
+      );
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        'tag.name IN (:...tagNames)',
+        { tagNames: ['Tag 1', 'Tag 2'] },
+      );
+    });
+
+    it('should return all Todos with Sorting ASC by Todo name', async () => {
+      const listId = 1;
+      const sortingOption: TodoSortingOptionsDto = {
+        sortBy: 'name',
+        sortOrder: 'ASC',
+      };
+      const filterOptions: TodoFilterOptionsDto = {};
+
+      await service.getAll(listId, sortingOption, filterOptions);
+
+      expect(mockQueryBuilder.orderBy).toHaveBeenCalledWith('todo.name', 'ASC');
+    });
+
+    it('should return all Todos with Sorting DESC by Status name', async () => {
+      const listId = 1;
+      const sortingOption: TodoSortingOptionsDto = {
+        sortBy: 'status',
+        sortOrder: 'DESC',
+      };
+      const filterOptions: TodoFilterOptionsDto = {};
+
+      await service.getAll(listId, sortingOption, filterOptions);
+
+      expect(mockQueryBuilder.orderBy).toHaveBeenCalledWith(
+        'status.name',
+        'DESC',
+      );
     });
   });
 

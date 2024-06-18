@@ -19,10 +19,10 @@ export class StatusController {
     return this.statusService.getAll();
   }
 
-  @Get(':id')
+  @Get(':statusId')
   @ApiOperation({ summary: 'Get tag by Status' })
   @ApiResponse({ status: 200, description: 'successful', type: Status })
-  getOne(@Param('id') id: number): Promise<Status> {
+  getOne(@Param('statusId') id: number): Promise<Status> {
     return this.statusService.getOne(id);
   }
 

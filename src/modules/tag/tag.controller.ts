@@ -20,10 +20,10 @@ export class TagController {
     return this.tagService.getAll();
   }
 
-  @Get(':id')
+  @Get(':tagId')
   @ApiOperation({ summary: 'Get tag by id' })
   @ApiResponse({ status: 200, description: 'successful', type: Tag })
-  getOne(@Param('id') id: number): Promise<Tag> {
+  getOne(@Param('tagId') id: number): Promise<Tag> {
     return this.tagService.getOne(id);
   }
 
@@ -39,10 +39,10 @@ export class TagController {
     return this.tagService.create(plainToInstance(Tag, payload));
   }
 
-  @Delete(':id')
+  @Delete(':tagId')
   @ApiOperation({ summary: 'Delete tag by id' })
   @ApiResponse({ status: 200, description: 'successful' })
-  delete(@Param('id') id: number): Promise<DeleteResult> {
+  delete(@Param('tagId') id: number): Promise<DeleteResult> {
     return this.tagService.delete(id);
   }
 }

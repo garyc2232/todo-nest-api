@@ -14,7 +14,7 @@ import { UserDto } from './user.dto';
 import { ListService } from '../list/list.service';
 import { List } from '../list/list.entity';
 import { DeleteResult } from 'typeorm';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { Public } from '../../providers/decorators/public.decorator';
 
 @ApiTags('user')
@@ -30,8 +30,9 @@ export class UserController {
     return this.userService.getAll();
   }
 
-  @Get(':id')
-  getOne(@Param('id') id: number): Promise<User> {
+  @Get(':userId')
+  @ApiParam({ name: 'userId' })
+  getOne(@Param('userId') id: number): Promise<User> {
     return this.userService.getOneByIdOrName({ id: id });
   }
 
@@ -42,13 +43,15 @@ export class UserController {
     await this.userService.create(payload);
   }
 
-  @Get(':id/list')
-  getListByUserId(@Param('id') id: number): Promise<List[]> {
+  @Get(':userId/list')
+  @ApiParam({ name: 'userId' })
+  getListByUserId(@Param('userId') id: number): Promise<List[]> {
     return this.listService.findByOwnerId(id);
   }
 
-  @Delete(':id')
-  delete(@Param('id') id: number): Promise<DeleteResult> {
+  @Delete(':userId')
+  @ApiParam({ name: 'userId' })
+  delete(@Param('userId') id: number): Promise<DeleteResult> {
     return this.userService.delete(id);
   }
 }

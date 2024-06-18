@@ -1,9 +1,10 @@
 import { Transform, Type } from 'class-transformer';
-import { IsDate, IsNumber, Length } from 'class-validator';
+import { IsDate, IsIn, IsNumber, IsOptional, Length } from 'class-validator';
 import { OmitType } from '@nestjs/mapped-types';
 import { Tag } from '../tag/tag.entity';
 import { Status } from '../status/status.entity';
 import { List } from '../list/list.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class TodoDto {
   @Length(2, 40)
@@ -19,6 +20,28 @@ export class TodoDto {
   priority: number;
   tags: Tag[];
   status?: Status;
+}
+
+export class TodoFilterOptionsDto {
+  @ApiProperty({ required: false, example: 'In Progress' })
+  status?: Status['name'];
+  @ApiProperty({ required: false, example: 'Tag 1, Tag 2' })
+  tags?: string;
+}
+export class TodoSortingOptionsDto {
+  @IsOptional()
+  @IsIn(['id', 'name', 'dueDate', 'priority', 'status'])
+  @ApiProperty({
+    required: false,
+    enum: ['id', 'name', 'dueDate', 'priority', 'status'],
+  })
+  sortBy?: 'id' | 'name' | 'dueDate' | 'priority' | 'status';
+
+  @IsOptional()
+  @IsIn(['ASC', 'DESC'])
+  @Transform(({ value }) => value && value.toUpperCase())
+  @ApiProperty({ required: false, enum: ['ASC', 'DESC'] })
+  sortOrder?: 'ASC' | 'DESC';
 }
 
 export class TodoCreatePayloadDto extends OmitType(TodoDto, ['status']) {}
