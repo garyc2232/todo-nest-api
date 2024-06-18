@@ -6,6 +6,8 @@ import {
   Param,
   Patch,
   Post,
+  Query,
+  ValidationPipe,
 } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { DeleteResult } from 'typeorm';
@@ -17,7 +19,9 @@ import { UserDto } from '../user/user.dto';
 import { TodoService } from '../todo/todo.service';
 import {
   TodoCreatePayloadDto,
+  TodoFilterOptionsDto,
   TodoResponseDto,
+  TodoSortingOptionsDto,
   TodoUpdateDto,
 } from '../todo/todo.dto';
 import { Todo } from '../todo/todo.entity';
@@ -43,10 +47,12 @@ export class ListController {
   async getTodosByListId(
     @GetCurrentUserId() userId: UserDto['id'],
     @Param('listId') listId: List['id'],
+    @Query() sortingOption: TodoSortingOptionsDto,
+    @Query() filterOptions: TodoFilterOptionsDto
   ): Promise<TodoResponseDto[]> {
     const list = await this.listService.getOne(userId, listId);
 
-    return this.todoService.getAll(list.id);
+    return this.todoService.getAll(list.id, sortingOption, filterOptions);
   }
 
   @ApiTags('list')

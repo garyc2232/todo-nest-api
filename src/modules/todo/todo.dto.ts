@@ -1,5 +1,5 @@
 import { Transform, Type } from 'class-transformer';
-import { IsDate, IsNumber, Length } from 'class-validator';
+import { IsDate, IsIn, IsNumber, IsOptional, Length } from 'class-validator';
 import { OmitType } from '@nestjs/mapped-types';
 import { Tag } from '../tag/tag.entity';
 import { Status } from '../status/status.entity';
@@ -21,7 +21,22 @@ export class TodoDto {
   status?: Status;
 }
 
-export class TodoCreatePayloadDto extends OmitType(TodoDto, ['status']) {}
+export class TodoFilterOptionsDto {
+  status?: Status['name'];
+  tags?: string;
+}
+export class TodoSortingOptionsDto {
+  @IsOptional()
+  @IsIn(['id', 'name', 'dueDate', 'priority', 'status'])
+  sortBy?: 'id' | 'name' | 'dueDate' | 'priority' | 'status';
+
+  @IsOptional()
+  @IsIn(['ASC', 'DESC'])
+  @Transform(({ value }) => value && value.toUpperCase())
+  sortOrder?: 'ASC' | 'DESC';
+}
+
+export class TodoCreatePayloadDto extends OmitType(TodoDto, ['status']) { }
 export class TodoCreateDto extends TodoCreatePayloadDto {
   @IsNumber()
   list: List;
