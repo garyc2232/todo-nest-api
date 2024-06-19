@@ -35,3 +35,14 @@ services:
       - DATABASE_HOST=todo-api-db
     depends_on:
       - todo-api-db
+  todo-react-app:
+    container_name: todo-react-app.frontend
+    build:
+      context: ../todo-app
+      dockerfile: ../todo-app/Dockerfile
+    restart: always
+    ports:
+      - "5173:5173"
+    depends_on:
+      - todo-api-db
+      - todo-api-nestjs-service
