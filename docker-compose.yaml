@@ -38,8 +38,8 @@ services:
   todo-react-app:
     container_name: todo-react-app.frontend
     build:
-      context: ../todo-app
-      dockerfile: ../todo-app/Dockerfile
+      context: ../todo-react-app
+      dockerfile: ../todo-react-app/Dockerfile
     restart: always
     ports:
       - "5173:5173"
